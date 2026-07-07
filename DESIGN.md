@@ -2,7 +2,7 @@
 
 ## Product Context
 - **What this is:** A mental health navigation and comparison platform for Malaysians seeking therapy. Turns overwhelming complexity into a clear, human, supportive journey.
-- **Who it's for:** Malaysians who feel lost, overwhelmed, or priced out by existing clinical directories.
+- **Who it's for:** Malaysians who feel lost, overwhelmed, or priced out by existing websites that show up as the top search results.
 - **Space/industry:** Health-tech / mental health services marketplace. Peers: ThoughtFull World, Skybi, MIASA, Lyra Health, Talkspace.
 - **Project type:** CMS-powered marketing/content platform with planned marketplace features (provider search, comparison, booking).
 
