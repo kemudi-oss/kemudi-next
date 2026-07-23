@@ -72,6 +72,17 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    'provider-profiles': ProviderProfile;
+    specialties: Specialty;
+    approaches: Approach;
+    centres: Centre;
+    licenses: License;
+    interests: Interest;
+    'consent-logs': ConsentLog;
+    reviews: Review;
+    languages: Language;
+    bookings: Booking;
+    'match-responses': MatchResponse;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -94,6 +105,17 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'provider-profiles': ProviderProfilesSelect<false> | ProviderProfilesSelect<true>;
+    specialties: SpecialtiesSelect<false> | SpecialtiesSelect<true>;
+    approaches: ApproachesSelect<false> | ApproachesSelect<true>;
+    centres: CentresSelect<false> | CentresSelect<true>;
+    licenses: LicensesSelect<false> | LicensesSelect<true>;
+    interests: InterestsSelect<false> | InterestsSelect<true>;
+    'consent-logs': ConsentLogsSelect<false> | ConsentLogsSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
+    languages: LanguagesSelect<false> | LanguagesSelect<true>;
+    bookings: BookingsSelect<false> | BookingsSelect<true>;
+    'match-responses': MatchResponsesSelect<false> | MatchResponsesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -108,16 +130,18 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'ms') | ('en' | 'ms')[];
   globals: {
     header: Header;
     footer: Footer;
+    'site-settings': SiteSetting;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'ms';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -159,7 +183,7 @@ export interface Page {
   id: number;
   title: string;
   hero: {
-    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact' | 'searchHero';
     richText?: {
       root: {
         type: string;
@@ -188,6 +212,10 @@ export interface Page {
               | ({
                   relationTo: 'posts';
                   value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'provider-profiles';
+                  value: number | ProviderProfile;
                 } | null);
             url?: string | null;
             label: string;
@@ -200,8 +228,89 @@ export interface Page {
         }[]
       | null;
     media?: (number | null) | Media;
+    searchPlaceholder?: string | null;
+    suggestions?:
+      | {
+          label: string;
+          url: string;
+          id?: string | null;
+        }[]
+      | null;
+    backgroundBlob?: ('mistSage' | 'warmSand' | 'none') | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | {
+        heading?: string | null;
+        subheading?: string | null;
+        services?: (number | Specialty)[] | null;
+        viewAllLink?: {
+          label?: string | null;
+          url?: string | null;
+        };
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'serviceCarousel';
+      }
+    | {
+        heading?: string | null;
+        testimonials?:
+          | {
+              quote: string;
+              author: string;
+              context?: string | null;
+              avatar?: (number | null) | Media;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'testimonials';
+      }
+    | {
+        heading?: string | null;
+        subheading?: string | null;
+        items?:
+          | {
+              question: string;
+              answer: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'faq';
+      }
+    | {
+        heading?: string | null;
+        posts?: (number | Post)[] | null;
+        viewAllLink?: {
+          label?: string | null;
+          url?: string | null;
+        };
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'featuredPosts';
+      }
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -420,6 +529,9 @@ export interface Category {
 export interface User {
   id: number;
   name?: string | null;
+  role: 'admin' | 'provider' | 'client';
+  avatar?: (number | null) | Media;
+  phone?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -441,10 +553,42 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallToActionBlock".
+ * via the `definition` "provider-profiles".
  */
-export interface CallToActionBlock {
-  richText?: {
+export interface ProviderProfile {
+  id: number;
+  user: number | User;
+  title: string;
+  coverImage?: (number | null) | Media;
+  credentials?:
+    | {
+        name: string;
+        institution?: string | null;
+        year?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  languages?: (number | Language)[] | null;
+  specialties?: (number | Specialty)[] | null;
+  approaches?:
+    | {
+        name?:
+          | (
+              | 'CBT'
+              | 'DBT'
+              | 'EMDR'
+              | 'Psychodynamic'
+              | 'Humanistic'
+              | 'Solution-Focused'
+              | 'ACT'
+              | 'Narrative'
+              | 'Family Systems'
+            )
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  about?: {
     root: {
       type: string;
       children: {
@@ -459,43 +603,31 @@ export interface CallToActionBlock {
     };
     [k: string]: unknown;
   } | null;
-  links?:
+  philosophy?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  location?: {
+    address?: string | null;
+    lat?: number | null;
+    lng?: number | null;
+  };
+  religion?: ('islam' | 'christianity' | 'buddhism' | 'hinduism' | 'sikhism' | 'taoism' | 'none') | null;
+  faq?:
     | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-          /**
-           * Choose how the link should be rendered.
-           */
-          appearance?: ('default' | 'outline') | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'cta';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ContentBlock".
- */
-export interface ContentBlock {
-  columns?:
-    | {
-        size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
-        richText?: {
+        question: string;
+        answer: {
           root: {
             type: string;
             children: {
@@ -509,103 +641,81 @@ export interface ContentBlock {
             version: number;
           };
           [k: string]: unknown;
-        } | null;
-        enableLink?: boolean | null;
-        link?: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-          /**
-           * Choose how the link should be rendered.
-           */
-          appearance?: ('default' | 'outline') | null;
         };
         id?: string | null;
       }[]
     | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'content';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaBlock".
- */
-export interface MediaBlock {
-  media: number | Media;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'mediaBlock';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ArchiveBlock".
- */
-export interface ArchiveBlock {
-  introContent?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  populateBy?: ('collection' | 'selection') | null;
-  relationTo?: 'posts' | null;
-  categories?: (number | Category)[] | null;
-  limit?: number | null;
-  selectedDocs?:
+  sessionFee: number;
+  currency?: string | null;
+  acceptsInsurance?: boolean | null;
+  offersSlidingScale?: boolean | null;
+  sessionFormats?:
     | {
-        relationTo: 'posts';
-        value: number | Post;
+        format: 'online' | 'in-person' | 'both';
+        location?: string | null;
+        id?: string | null;
       }[]
     | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'archive';
+  intakeForm?: (number | null) | Form;
+  intakeFormRequired?: boolean | null;
+  approvalStatus: 'pending' | 'approved' | 'rejected';
+  approvalNotes?: string | null;
+  requestedAt?: string | null;
+  approvedAt?: string | null;
+  approvedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
+  accountStatus: 'active' | 'inactive';
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FormBlock".
+ * via the `definition` "languages".
  */
-export interface FormBlock {
-  form: number | Form;
-  enableIntro?: boolean | null;
-  introContent?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'formBlock';
+export interface Language {
+  id: number;
+  name: string;
+  /**
+   * ISO 639-1 language code (e.g. en, ms, zh, ta)
+   */
+  code: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialties".
+ */
+export interface Specialty {
+  id: number;
+  title: string;
+  slug?: string | null;
+  description?: string | null;
+  category?:
+    | (
+        | 'individual'
+        | 'couples'
+        | 'family'
+        | 'group'
+        | 'psychiatric'
+        | 'child-adolescent'
+        | 'art'
+        | 'emdr'
+        | 'cbt'
+        | 'crisis'
+      )
+    | null;
+  icon?: (number | null) | Media;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -778,6 +888,382 @@ export interface Form {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'provider-profiles';
+                value: number | ProviderProfile;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentBlock".
+ */
+export interface ContentBlock {
+  columns?:
+    | {
+        size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        enableLink?: boolean | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'provider-profiles';
+                value: number | ProviderProfile;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'content';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaBlock".
+ */
+export interface MediaBlock {
+  media: number | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ArchiveBlock".
+ */
+export interface ArchiveBlock {
+  introContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  populateBy?: ('collection' | 'selection') | null;
+  relationTo?: 'posts' | null;
+  categories?: (number | Category)[] | null;
+  limit?: number | null;
+  selectedDocs?:
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'archive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock".
+ */
+export interface FormBlock {
+  form: number | Form;
+  enableIntro?: boolean | null;
+  introContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'formBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "approaches".
+ */
+export interface Approach {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "centres".
+ */
+export interface Centre {
+  id: number;
+  name: string;
+  slug?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  photos?:
+    | {
+        photo: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  address: string;
+  mapCoordinates?: {
+    lat?: number | null;
+    lng?: number | null;
+  };
+  directions?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  therapists?: (number | ProviderProfile)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "licenses".
+ */
+export interface License {
+  id: number;
+  provider: number | ProviderProfile;
+  type: string;
+  number: string;
+  issuingBody: string;
+  proof?: (number | null) | Media;
+  expiryDate: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "interests".
+ */
+export interface Interest {
+  id: number;
+  email: string;
+  provider: number | ProviderProfile;
+  notified?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-logs".
+ */
+export interface ConsentLog {
+  id: number;
+  user?: (number | null) | User;
+  type: 'platform' | 'marketing' | 'health';
+  consented: boolean;
+  ipAddress?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  provider: number | ProviderProfile;
+  rating: number;
+  title?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Display name (anonymous-friendly)
+   */
+  authorName?: string | null;
+  authorAge?: ('18-24' | '25-34' | '35-44' | '45-54' | '55+') | null;
+  verified?: boolean | null;
+  status: 'pending' | 'approved' | 'rejected';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings".
+ */
+export interface Booking {
+  id: number;
+  provider: number | ProviderProfile;
+  service?: (number | null) | Specialty;
+  dateTime: string;
+  /**
+   * Session duration in minutes
+   */
+  duration?: number | null;
+  format?: ('online' | 'in-person') | null;
+  bookingStatus: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  clientName?: string | null;
+  clientEmail: string;
+  clientPhone?: string | null;
+  notes?: string | null;
+  intakeFormResponse?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  paymentStatus?: ('pending' | 'paid' | 'refunded') | null;
+  calendarInviteSent?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "match-responses".
+ */
+export interface MatchResponse {
+  id: number;
+  responses?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  recommendedProvider?: (number | null) | ProviderProfile;
+  runnerUpProviders?: (number | ProviderProfile)[] | null;
+  sessionId?: string | null;
+  timestamp?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -992,6 +1478,50 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'provider-profiles';
+        value: number | ProviderProfile;
+      } | null)
+    | ({
+        relationTo: 'specialties';
+        value: number | Specialty;
+      } | null)
+    | ({
+        relationTo: 'approaches';
+        value: number | Approach;
+      } | null)
+    | ({
+        relationTo: 'centres';
+        value: number | Centre;
+      } | null)
+    | ({
+        relationTo: 'licenses';
+        value: number | License;
+      } | null)
+    | ({
+        relationTo: 'interests';
+        value: number | Interest;
+      } | null)
+    | ({
+        relationTo: 'consent-logs';
+        value: number | ConsentLog;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: number | Review;
+      } | null)
+    | ({
+        relationTo: 'languages';
+        value: number | Language;
+      } | null)
+    | ({
+        relationTo: 'bookings';
+        value: number | Booking;
+      } | null)
+    | ({
+        relationTo: 'match-responses';
+        value: number | MatchResponse;
+      } | null)
+    | ({
         relationTo: 'redirects';
         value: number | Redirect;
       } | null)
@@ -1080,6 +1610,15 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        searchPlaceholder?: T;
+        suggestions?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        backgroundBlob?: T;
       };
   layout?:
     | T
@@ -1089,6 +1628,66 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        serviceCarousel?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              services?: T;
+              viewAllLink?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        testimonials?:
+          | T
+          | {
+              heading?: T;
+              testimonials?:
+                | T
+                | {
+                    quote?: T;
+                    author?: T;
+                    context?: T;
+                    avatar?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        faq?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        featuredPosts?:
+          | T
+          | {
+              heading?: T;
+              posts?: T;
+              viewAllLink?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
       };
   meta?:
     | T
@@ -1339,6 +1938,9 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
+  avatar?: T;
+  phone?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1355,6 +1957,237 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "provider-profiles_select".
+ */
+export interface ProviderProfilesSelect<T extends boolean = true> {
+  user?: T;
+  title?: T;
+  coverImage?: T;
+  credentials?:
+    | T
+    | {
+        name?: T;
+        institution?: T;
+        year?: T;
+        id?: T;
+      };
+  languages?: T;
+  specialties?: T;
+  approaches?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  about?: T;
+  philosophy?: T;
+  location?:
+    | T
+    | {
+        address?: T;
+        lat?: T;
+        lng?: T;
+      };
+  religion?: T;
+  faq?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  sessionFee?: T;
+  currency?: T;
+  acceptsInsurance?: T;
+  offersSlidingScale?: T;
+  sessionFormats?:
+    | T
+    | {
+        format?: T;
+        location?: T;
+        id?: T;
+      };
+  intakeForm?: T;
+  intakeFormRequired?: T;
+  approvalStatus?: T;
+  approvalNotes?: T;
+  requestedAt?: T;
+  approvedAt?: T;
+  approvedBy?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  accountStatus?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialties_select".
+ */
+export interface SpecialtiesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  category?: T;
+  icon?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "approaches_select".
+ */
+export interface ApproachesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "centres_select".
+ */
+export interface CentresSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  photos?:
+    | T
+    | {
+        photo?: T;
+        caption?: T;
+        id?: T;
+      };
+  address?: T;
+  mapCoordinates?:
+    | T
+    | {
+        lat?: T;
+        lng?: T;
+      };
+  directions?: T;
+  therapists?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "licenses_select".
+ */
+export interface LicensesSelect<T extends boolean = true> {
+  provider?: T;
+  type?: T;
+  number?: T;
+  issuingBody?: T;
+  proof?: T;
+  expiryDate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "interests_select".
+ */
+export interface InterestsSelect<T extends boolean = true> {
+  email?: T;
+  provider?: T;
+  notified?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-logs_select".
+ */
+export interface ConsentLogsSelect<T extends boolean = true> {
+  user?: T;
+  type?: T;
+  consented?: T;
+  ipAddress?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  provider?: T;
+  rating?: T;
+  title?: T;
+  content?: T;
+  authorName?: T;
+  authorAge?: T;
+  verified?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "languages_select".
+ */
+export interface LanguagesSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings_select".
+ */
+export interface BookingsSelect<T extends boolean = true> {
+  provider?: T;
+  service?: T;
+  dateTime?: T;
+  duration?: T;
+  format?: T;
+  bookingStatus?: T;
+  clientName?: T;
+  clientEmail?: T;
+  clientPhone?: T;
+  notes?: T;
+  intakeFormResponse?: T;
+  paymentStatus?: T;
+  calendarInviteSent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "match-responses_select".
+ */
+export interface MatchResponsesSelect<T extends boolean = true> {
+  responses?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  recommendedProvider?: T;
+  runnerUpProviders?: T;
+  sessionId?: T;
+  timestamp?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1650,6 +2483,44 @@ export interface Header {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'provider-profiles';
+                value: number | ProviderProfile;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  audienceToggle?: {
+    helpSeekerLabel?: string | null;
+    helpSeekerUrl?: string | null;
+    therapistLabel?: string | null;
+    therapistUrl?: string | null;
+  };
+  ctaButton?: {
+    label?: string | null;
+    url?: string | null;
+  };
+  mobileMenuItems?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'provider-profiles';
+                value: number | ProviderProfile;
               } | null);
           url?: string | null;
           label: string;
@@ -1679,6 +2550,10 @@ export interface Footer {
             | ({
                 relationTo: 'posts';
                 value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'provider-profiles';
+                value: number | ProviderProfile;
               } | null);
           url?: string | null;
           label: string;
@@ -1691,10 +2566,55 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * Number of months before showing induction course again
+   */
+  inductionCourseRepeatMonths?: number | null;
+  /**
+   * Minutes a reserved slot is held before release
+   */
+  slotReservationMinutes?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
   navItems?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  audienceToggle?:
+    | T
+    | {
+        helpSeekerLabel?: T;
+        helpSeekerUrl?: T;
+        therapistLabel?: T;
+        therapistUrl?: T;
+      };
+  ctaButton?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+      };
+  mobileMenuItems?:
     | T
     | {
         link?:
@@ -1731,6 +2651,17 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  inductionCourseRepeatMonths?: T;
+  slotReservationMinutes?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

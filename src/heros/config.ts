@@ -35,6 +35,10 @@ export const hero: Field = {
           label: 'Low Impact',
           value: 'lowImpact',
         },
+        {
+          label: 'Search Hero',
+          value: 'searchHero',
+        },
       ],
       required: true,
     },
@@ -66,6 +70,39 @@ export const hero: Field = {
       },
       relationTo: 'media',
       required: true,
+    },
+    {
+      name: 'searchPlaceholder',
+      type: 'text',
+      defaultValue: 'What are you looking for?',
+      admin: {
+        condition: (_, { type } = {}) => type === 'searchHero',
+      },
+    },
+    {
+      name: 'suggestions',
+      type: 'array',
+      admin: {
+        condition: (_, { type } = {}) => type === 'searchHero',
+      },
+      fields: [
+        { name: 'label', type: 'text', required: true },
+        { name: 'url', type: 'text', required: true },
+      ],
+      maxRows: 6,
+    },
+    {
+      name: 'backgroundBlob',
+      type: 'select',
+      admin: {
+        condition: (_, { type } = {}) => type === 'searchHero',
+      },
+      options: [
+        { label: 'Mist Sage', value: 'mistSage' },
+        { label: 'Warm Sand', value: 'warmSand' },
+        { label: 'None', value: 'none' },
+      ],
+      defaultValue: 'mistSage',
     },
   ],
   label: false,

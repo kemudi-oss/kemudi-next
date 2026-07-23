@@ -25,6 +25,58 @@ export const Header: GlobalConfig = {
         },
       },
     },
+    {
+      name: 'audienceToggle',
+      type: 'group',
+      fields: [
+        {
+          name: 'helpSeekerLabel',
+          type: 'text',
+          defaultValue: 'For Help Seekers',
+        },
+        {
+          name: 'helpSeekerUrl',
+          type: 'text',
+          defaultValue: '/',
+        },
+        {
+          name: 'therapistLabel',
+          type: 'text',
+          defaultValue: 'For Therapists',
+        },
+        {
+          name: 'therapistUrl',
+          type: 'text',
+          defaultValue: '/for-therapists',
+        },
+      ],
+    },
+    {
+      name: 'ctaButton',
+      type: 'group',
+      fields: [
+        {
+          name: 'label',
+          type: 'text',
+          defaultValue: 'List Your Services',
+        },
+        {
+          name: 'url',
+          type: 'text',
+          defaultValue: '/for-therapists/list',
+        },
+      ],
+    },
+    {
+      name: 'mobileMenuItems',
+      type: 'array',
+      fields: [
+        link({
+          appearances: false,
+        }),
+      ],
+      maxRows: 10,
+    },
   ],
   hooks: {
     afterChange: [revalidateHeader],

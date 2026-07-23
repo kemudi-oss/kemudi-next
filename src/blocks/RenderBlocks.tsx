@@ -5,8 +5,12 @@ import type { Page } from '@/payload-types'
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
+import { FeaturedPosts } from '@/blocks/FeaturedPosts/Component'
+import { FAQ } from '@/blocks/FAQ/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
+import { ServiceCarousel } from '@/blocks/ServiceCarousel/Component'
+import { Testimonials } from '@/blocks/Testimonials/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -14,6 +18,10 @@ const blockComponents = {
   cta: CallToActionBlock,
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
+  serviceCarousel: ServiceCarousel,
+  testimonials: Testimonials,
+  faq: FAQ,
+  featuredPosts: FeaturedPosts,
 }
 
 export const RenderBlocks: React.FC<{

@@ -1,13 +1,27 @@
 import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
+import { postgresAdapter } from '@payloadcms/db-postgres'
 import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
+import { migrations } from './migrations'
 
+import { Bookings } from './collections/Bookings'
 import { Categories } from './collections/Categories'
+import { Languages } from './collections/Languages'
+import { MatchResponses } from './collections/MatchResponses'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
+import { ProviderProfiles } from './collections/ProviderProfiles'
+import { Reviews } from './collections/Reviews'
+import { Specialties } from './collections/Specialties'
+import { Approaches } from './collections/Approaches'
+import { Centres } from './collections/Centres'
+import { Licences } from './collections/Licences'
+import { Interests } from './collections/Interests'
+import { ConsentLogs } from './collections/ConsentLogs'
+import { SiteSettings } from './globals/SiteSettings'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
@@ -58,13 +72,30 @@ export default buildConfig({
   },
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
-  db: vercelPostgresAdapter({
-    pool: {
-      connectionString: process.env.POSTGRES_URL || '',
-    },
-  }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  db: process.env.NODE_ENV === 'production'
+    ? vercelPostgresAdapter({
+      prodMigrations: migrations,
+      pool: {
+        connectionString: process.env.POSTGRES_URL || '',
+      },
+    })
+    : postgresAdapter({
+      prodMigrations: migrations,
+      pool: {
+        connectionString: process.env.POSTGRES_URL || '',
+      },
+    })
+  ,
+  collections: [Pages, Posts, Media, Categories, Users, ProviderProfiles, Specialties, Approaches, Centres, Licences, Interests, ConsentLogs, Reviews, Languages, Bookings, MatchResponses],
   cors: [getServerSideURL()].filter(Boolean),
+  localization: {
+    locales: [
+      { label: 'English', code: 'en' },
+      { label: 'Malay', code: 'ms' },
+    ],
+    defaultLocale: 'en',
+    fallback: true,
+  },
   plugins: [
     ...plugins,
     vercelBlobStorage({
@@ -74,7 +105,7 @@ export default buildConfig({
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
   ],
-  globals: [Header, Footer],
+  globals: [Header, Footer, SiteSettings],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {
