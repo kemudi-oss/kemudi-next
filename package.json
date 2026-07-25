@@ -5,7 +5,7 @@
   "license": "Proprietary",
   "type": "module",
   "scripts": {
-    "build": "cross-env USER=postgres NODE_OPTIONS=--no-deprecation next build",
+    "build": "cross-env USER=postgres NODE_OPTIONS=--no-deprecation next build --experimental-build-mode compile",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "dev": "cross-env USER=postgres NODE_OPTIONS=--no-deprecation next dev",
     "dev:prod": "cross-env USER=postgres NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",

@@ -1,5 +1,37 @@
 import type { Payload } from 'payload'
 
+function textToLexical(text: string) {
+  return {
+    root: {
+      type: 'root' as const,
+      children: [
+        {
+          type: 'paragraph' as const,
+          children: [
+            {
+              type: 'text' as const,
+              detail: 0,
+              format: 0,
+              mode: 'normal' as const,
+              style: '',
+              text,
+              version: 1,
+            },
+          ],
+          direction: 'ltr' as const,
+          format: '' as const,
+          indent: 0,
+          version: 1,
+        },
+      ],
+      direction: 'ltr' as const,
+      format: '' as const,
+      indent: 0,
+      version: 1,
+    },
+  }
+}
+
 export const seedKemudi = async ({ payload, force = false }: { payload: Payload; force?: boolean }): Promise<void> => {
   payload.logger.info('Seeding Kemudi database...')
 
@@ -145,8 +177,8 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
       languages: languageIds.slice(0, 2),
       specialties: specialtyIds.slice(0, 2),
       approaches: [{ name: 'CBT' }, { name: 'Psychodynamic' }],
-      about: 'Dr. Sarah Chen is a clinical psychologist with over 10 years of experience in treating anxiety and depression. She uses evidence-based approaches including CBT and psychodynamic therapy.',
-      philosophy: 'I believe in creating a safe, non-judgmental space where you can explore your thoughts and feelings at your own pace.',
+      about: textToLexical('Dr. Sarah Chen is a clinical psychologist with over 10 years of experience in treating anxiety and depression. She uses evidence-based approaches including CBT and psychodynamic therapy.'),
+      philosophy: textToLexical('I believe in creating a safe, non-judgmental space where you can explore your thoughts and feelings at your own pace.'),
       religion: 'none',
       location: {
         address: 'Bangsar, Kuala Lumpur',
@@ -172,8 +204,8 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
       languages: [languages[0].id, languages[1].id],
       specialties: [specialties[2].id, specialties[4].id],
       approaches: [{ name: 'DBT' }, { name: 'Humanistic' }],
-      about: 'Ahmad Rashid is a licensed counsellor specializing in relationship issues and stress management. He provides a warm, supportive environment for couples and individuals.',
-      philosophy: 'Every relationship has its challenges. Together, we can find new ways to connect and communicate.',
+      about: textToLexical('Ahmad Rashid is a licensed counsellor specializing in relationship issues and stress management. He provides a warm, supportive environment for couples and individuals.'),
+      philosophy: textToLexical('Every relationship has its challenges. Together, we can find new ways to connect and communicate.'),
       religion: 'islam',
       location: {
         address: 'Petaling Jaya, Selangor',
@@ -199,8 +231,8 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
       languages: [languages[0].id, languages[2].id],
       specialties: [specialties[0].id, specialties[3].id, specialties[5].id],
       approaches: [{ name: 'EMDR' }, { name: 'ACT' }],
-      about: 'Dr. Priya Sharma is a psychiatrist with expertise in trauma and anxiety disorders. She combines medication management with psychotherapy for comprehensive care.',
-      philosophy: 'Mental health is health. I take a holistic approach to treatment, combining medication with therapy when appropriate.',
+      about: textToLexical('Dr. Priya Sharma is a psychiatrist with expertise in trauma and anxiety disorders. She combines medication management with psychotherapy for comprehensive care.'),
+      philosophy: textToLexical('Mental health is health. I take a holistic approach to treatment, combining medication with therapy when appropriate.'),
       religion: 'hinduism',
       location: {
         address: 'Damansara Heights, Kuala Lumpur',
@@ -252,7 +284,6 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
       collection: 'bookings',
       data: {
         provider: provider1.id,
-        user: client.id,
         dateTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week from now
         bookingStatus: 'confirmed',
         clientName: 'Test Client',
@@ -263,7 +294,6 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
       collection: 'bookings',
       data: {
         provider: provider2.id,
-        user: client.id,
         dateTime: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 2 weeks from now
         bookingStatus: 'pending',
         clientName: 'Test Client',
@@ -281,7 +311,7 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
         provider: provider1.id,
         rating: 5,
         title: 'Excellent therapist',
-        content: 'Dr. Chen helped me through a very difficult time. Her approach is warm and professional.',
+        content: textToLexical('Dr. Chen helped me through a very difficult time. Her approach is warm and professional.'),
         authorName: 'Anonymous',
         status: 'approved',
       },
@@ -292,7 +322,7 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
         provider: provider1.id,
         rating: 4,
         title: 'Very helpful',
-        content: 'Good sessions, though sometimes felt a bit rushed.',
+        content: textToLexical('Good sessions, though sometimes felt a bit rushed.'),
         authorName: 'Anonymous',
         status: 'approved',
       },
@@ -303,7 +333,7 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
         provider: provider2.id,
         rating: 5,
         title: 'Great counsellor',
-        content: 'Ahmad helped us improve our communication significantly.',
+        content: textToLexical('Ahmad helped us improve our communication significantly.'),
         authorName: 'Anonymous',
         status: 'approved',
       },

@@ -8,7 +8,7 @@ const oauth2Client = new google.auth.OAuth2(
   `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/calendar/callback`
 )
 
-export function getGoogleAuthUrl(providerId: string) {
+export async function getGoogleAuthUrl(providerId: string) {
   const scopes = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/calendar.events']
 
   return oauth2Client.generateAuthUrl({

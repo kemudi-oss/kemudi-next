@@ -78,12 +78,14 @@ export default buildConfig({
       pool: {
         connectionString: process.env.POSTGRES_URL || '',
       },
+      push: false,
     })
     : postgresAdapter({
       prodMigrations: migrations,
       pool: {
         connectionString: process.env.POSTGRES_URL || '',
       },
+      push: false,
     })
   ,
   collections: [Pages, Posts, Media, Categories, Users, ProviderProfiles, Specialties, Approaches, Centres, Licences, Interests, ConsentLogs, Reviews, Languages, Bookings, MatchResponses],

@@ -4,9 +4,11 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-06-24.dahlia',
-})
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2026-06-24.dahlia',
+  })
+}
 
 interface CancelBookingProps {
   bookingId: string
@@ -33,7 +35,7 @@ export async function cancelBooking({ bookingId, cancelledBy, reason }: CancelBo
     collection: 'bookings',
     id: bookingId,
     data: {
-      status: 'cancelled',
+      bookingStatus: 'cancelled',
     },
   })
 
