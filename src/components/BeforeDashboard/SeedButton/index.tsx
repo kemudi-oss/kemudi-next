@@ -7,7 +7,7 @@ import './index.scss'
 
 const SuccessMessage: React.FC = () => (
   <div>
-    Database seeded! You can now{' '}
+    Database seeded with Kemudi data! You can now{' '}
     <a target="_blank" href="/">
       visit your website
     </a>
@@ -19,10 +19,8 @@ export const SeedButton: React.FC = () => {
   const [seeded, setSeeded] = useState(false)
   const [error, setError] = useState<null | string>(null)
 
-  const handleClick = useCallback(
-    async (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault()
-
+  const handleSeed = useCallback(
+    async (force: boolean) => {
       if (seeded) {
         toast.info('Database already seeded.')
         return
@@ -40,26 +38,21 @@ export const SeedButton: React.FC = () => {
 
       try {
         toast.promise(
-          new Promise((resolve, reject) => {
-            try {
-              fetch('/next/seed', { method: 'POST', credentials: 'include' })
-                .then((res) => {
-                  if (res.ok) {
-                    resolve(true)
-                    setSeeded(true)
-                  } else {
-                    reject('An error occurred while seeding.')
-                  }
-                })
-                .catch((error) => {
-                  reject(error)
-                })
-            } catch (error) {
-              reject(error)
+          fetch('/api/seed', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ force }),
+          }).then(async (res) => {
+            if (!res.ok) {
+              const data = await res.json().catch(() => ({}))
+              throw new Error(data.error || 'Seeding failed')
             }
+            setSeeded(true)
+            return true
           }),
           {
-            loading: 'Seeding with data....',
+            loading: 'Seeding with Kemudi data...',
             success: <SuccessMessage />,
             error: 'An error occurred while seeding.',
           },
@@ -67,6 +60,8 @@ export const SeedButton: React.FC = () => {
       } catch (err) {
         const error = err instanceof Error ? err.message : String(err)
         setError(error)
+      } finally {
+        setLoading(false)
       }
     },
     [loading, seeded, error],
@@ -79,8 +74,15 @@ export const SeedButton: React.FC = () => {
 
   return (
     <Fragment>
-      <button className="seedButton" onClick={handleClick}>
+      <button className="seedButton" onClick={() => handleSeed(false)}>
         Seed your database
+      </button>
+      <button
+        className="seedButton"
+        onClick={() => handleSeed(true)}
+        style={{ marginLeft: '8px', opacity: 0.7 }}
+      >
+        Force re-seed
       </button>
       {message}
     </Fragment>

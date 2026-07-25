@@ -49,16 +49,39 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
   // If force, delete existing data
   if (force && users.totalDocs > 0) {
     payload.logger.info('Force re-seed: clearing existing data...')
-    const collections = ['bookings', 'reviews', 'interests', 'match-responses', 'licenses'] as const
-    for (const collection of collections) {
+    const collectionsToDelete = [
+      'bookings',
+      'reviews',
+      'interests',
+      'match-responses',
+      'licenses',
+      'provider-profiles',
+      'consent-logs',
+    ] as const
+
+    for (const collection of collectionsToDelete) {
       try {
         await payload.delete({
           collection,
           where: {},
         })
       } catch (e) {
-        // Collection might not exist yet
+        // Collection might not exist yet or might be empty
       }
+    }
+
+    // Delete non-admin users (keep admin users)
+    try {
+      const nonAdminUsers = await payload.find({
+        collection: 'users',
+        where: { role: { not_equals: 'admin' } },
+        limit: 100,
+      })
+      for (const user of nonAdminUsers.docs) {
+        await payload.delete({ collection: 'users', id: user.id })
+      }
+    } catch (e) {
+      // Ignore errors
     }
   }
 
@@ -352,10 +375,10 @@ export const seedKemudi = async ({ payload, force = false }: { payload: Payload;
 
   payload.logger.info('✅ Kemudi seed completed!')
   payload.logger.info('')
-  payload.logger.info('Test accounts:')
-  payload.logger.info('  Admin: admin@kemudi.com / admin123')
-  payload.logger.info('  Provider 1: sarah.chen@kemudi.com / provider123')
-  payload.logger.info('  Provider 2: ahmad.rashid@kemudi.com / provider123')
-  payload.logger.info('  Provider 3: priya.sharma@kemudi.com / provider123')
-  payload.logger.info('  Client: client@kemudi.com / client123')
+  payload.logger.info('Test accounts (passwords are the same for all):')
+  payload.logger.info(`  Admin: admin-${timestamp}@kemudi.com / admin123`)
+  payload.logger.info(`  Provider 1: sarah.chen-${timestamp}@kemudi.com / provider123`)
+  payload.logger.info(`  Provider 2: ahmad.rashid-${timestamp}@kemudi.com / provider123`)
+  payload.logger.info(`  Provider 3: priya.sharma-${timestamp}@kemudi.com / provider123`)
+  payload.logger.info(`  Client: client-${timestamp}@kemudi.com / client123`)
 }
