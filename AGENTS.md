@@ -25,7 +25,5 @@ Key routing rules:
 
 ## Commit Guidelines
 
-- DO NOT commit with co-author.
-- Use caveman-commit skill to generate commit messages, then reformat it using git-commit skill
-- When asked to reformat a commit message according to conventional commit format, use git-commit skill
-- When asked to reformat a commit message according to conventional commit format but given no original message, analyse the staged files and generate commit messages based on it using caveman-commit skill, then reformat it using git-commit skill.
+- DO NOT add co-author to the commits.
+- When asked generate a commit message, use caveman-commit skill to generate commit messages
