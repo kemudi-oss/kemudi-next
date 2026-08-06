@@ -6,6 +6,7 @@ import config from '@payload-config'
 import { SearchHero } from '@/heros/SearchHero'
 import { BlobShape } from '@/components/ui/blob-shape'
 import { ProviderCard } from '@/components/providers/ProviderCard'
+import { CompareProvider } from '@/providers/CompareProvider'
 import { MentorNote } from '@/components/ui/mentor-note'
 import { ArrowRightIcon } from 'lucide-react'
 
@@ -110,11 +111,13 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {result.docs.map((provider: any) => (
-                <ProviderCard key={provider.id} provider={provider} />
-              ))}
-            </div>
+            <CompareProvider>
+              <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {result.docs.map((provider: any) => (
+                  <ProviderCard key={provider.id} provider={provider} />
+                ))}
+              </div>
+            </CompareProvider>
 
             <div className="mt-8 text-center md:hidden">
               <Link
