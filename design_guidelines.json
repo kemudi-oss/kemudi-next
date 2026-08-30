@@ -1,0 +1,136 @@
+{
+  "project_name": "Kemudi",
+  "theme": "light",
+  "archetype": "Organic & Earthy (Trust, Growth, Calm)",
+  "typography": {
+    "font_family": {
+      "heading": "Cormorant Garamond, serif",
+      "body": "Manrope, sans-serif"
+    },
+    "hierarchy": {
+      "h1": "text-5xl sm:text-6xl tracking-tighter leading-none font-medium",
+      "h2": "text-3xl sm:text-4xl tracking-tight leading-tight",
+      "h3": "text-xl sm:text-2xl leading-snug",
+      "body": "text-base leading-relaxed",
+      "label": "text-xs tracking-[0.2em] uppercase font-bold"
+    },
+    "rules": [
+      "NEVER use Inter, Roboto, or standard sans-serifs for headings.",
+      "Apply tracking-tight to all headings above 32px.",
+      "Use font-medium or font-light for headings to keep the vibe human and sophisticated, not aggressive."
+    ],
+    "installation": "Ensure fonts are imported via Google Fonts in index.css or App.css."
+  },
+  "colors": {
+    "background": "#F9F6F0",
+    "surface": "#FFFFFF",
+    "primary": {
+      "DEFAULT": "#2B5341",
+      "hover": "#3B6D57",
+      "foreground": "#FFFFFF"
+    },
+    "secondary": {
+      "DEFAULT": "#C05C3D",
+      "hover": "#D96C4A",
+      "foreground": "#FFFFFF"
+    },
+    "accent": {
+      "DEFAULT": "#E2CBA3",
+      "hover": "#F0D9B1",
+      "foreground": "#1C2A24"
+    },
+    "text": {
+      "main": "#1C2A24",
+      "muted": "#5C6A63"
+    },
+    "border": "#E2CBA3",
+    "rules": [
+      "Avoid pure black (#000000); use deep pine (#1C2A24) instead.",
+      "NEVER use purple gradients or generic 'SaaS Blue'.",
+      "For backgrounds under text, ensure contrast ratio meets WCAG AA (min 4.5:1).",
+      "DO NOT use transparent backgrounds for dropdowns, headers, or overlays where content sits underneath."
+    ]
+  },
+  "layouts": {
+    "public_client_experience": {
+      "description": "Warm, human, 'older sibling' tone. Marketing/directory pages.",
+      "spacing": "Generous spacing (p-12, py-20, gap-8). Let the content breathe.",
+      "hero_section": "Asymmetrical layout. Soft, overlapping imagery. Organic shapes. Hero image overlay max bg-black/30.",
+      "therapist_directory": "Sidebar filters (Specialty, Language, Price MYR). Grid of therapist profile cards (rounded-2xl, 1px border, soft shadow on hover).",
+      "comparison_tool": "Side-by-side grid (up to 3). Keep layout clean, highlighting key diffs like Price and Approach.",
+      "quiz_flow": "Step-by-step form with soft transitions. Focus on one question at a time to reduce cognitive load."
+    },
+    "therapist_portal": {
+      "description": "Professional practice-management dashboard. Structured and dense but inherits the warm brand colors.",
+      "spacing": "Compact but clear (p-4 to p-6, tight gaps).",
+      "dashboard_grid": "Use Mode B: High Density Grid. 1px solid borders (#E2CBA3), flat surfaces, NO glassmorphism.",
+      "components": "Shadcn/UI components (tables for clients, tabs, simple charts/caps).",
+      "monetization": "Clear indicator of '5-client cap' for free tier. Subscription upgrade page uses clear pricing cards with primary CTAs."
+    }
+  },
+  "components": {
+    "strategy": "Hybrid Approach. Use raw HTML/Tailwind for expressive public pages. Use customized Shadcn for Therapist Dashboard, Forms, and complex interactions.",
+    "buttons": "Pill-shaped (rounded-full) or large radii (rounded-xl). Subtle lift (-translate-y-0.5) on hover.",
+    "cards": "Public: rounded-2xl with p-6/p-8 padding. Dashboard: Flat solid surfaces, rounded-lg, 1px subtle borders, no deep shadows.",
+    "headers": "Solid background (#F9F6F0) with hard bottom border. NO fully transparent headers if they overlap hero images.",
+    "navigation": "Clear logo left, links center, CTA right. Mobile-responsive."
+  },
+  "visual_enhancers": {
+    "textures": "Use subtle grain or noise overlay for background to kill digital flatness.",
+    "motion": "Soft, slow transitions. Staggered list entrances. Hover lifts.",
+    "shapes": "Use soft rounded corners. Avoid sharp, aggressive right angles.",
+    "avoid": [
+      "Centered everything (symmetry is boring)",
+      "Default Vercel/Stripe looks",
+      "Heavy shadow drops"
+    ]
+  },
+  "media": {
+    "image_urls": [
+      {
+        "url": "https://images.unsplash.com/photo-1604881991720-f91add269bed?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzOTB8MHwxfHNlYXJjaHwyfHx3YXJtJTIwY291bnNlbGluZyUyMHRoZXJhcHklMjBzZXNzaW9ufGVufDB8fHx8MTc4ODA5MjA5OHww&ixlib=rb-4.1.0&q=85",
+        "category": "Hero / Trust",
+        "description": "Two people holding hands on a table in comfort. Great for 'warm older sibling' mission statement."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1714976694867-bc0e012fab70?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzOTB8MHwxfHNlYXJjaHw0fHx3YXJtJTIwY291bnNlbGluZyUyMHRoZXJhcHklMjBzZXNzaW9ufGVufDB8fHx8MTc4ODA5MjA5OHww&ixlib=rb-4.1.0&q=85",
+        "category": "About / Mission",
+        "description": "Woman sitting on a couch talking to another woman. Perfect for representing a therapy session."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1758600587815-b654d1405e83?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxhc2lhbiUyMHRoZXJhcGlzdCUyMHNtaWxpbmclMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODgwOTIwOTh8MA&ixlib=rb-4.1.0&q=85",
+        "category": "Therapist Profile",
+        "description": "Smiling Asian woman with long dark hair. Ideal for a therapist profile mock."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1749700332031-cf99864959ea?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxhc2lhbiUyMHRoZXJhcGlzdCUyMHNtaWxpbmclMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODgwOTIwOTh8MA&ixlib=rb-4.1.0&q=85",
+        "category": "Therapist Profile",
+        "description": "Asian woman with glasses smiling. Ideal for secondary therapist profile or dashboard avatar."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1587304798516-e17f7191a3a9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwyfHxjYWxtJTIwYWJzdHJhY3QlMjBuYXR1cmUlMjB0ZXh0dXJlc3xlbnwwfHx8fDE3ODgwOTIwOTh8MA&ixlib=rb-4.1.0&q=85",
+        "category": "Background Texture",
+        "description": "Calm, soft water abstract texture. Good for section dividers or soft overlay."
+      }
+    ],
+    "rules": [
+      "NEVER use placeholder services (via.placeholder.com). ALWAYS use provided URLs.",
+      "Ensure images don't exceed 80vh on mobile."
+    ]
+  },
+  "icons": {
+    "library": "lucide-react",
+    "usage": "Use simple, clean icons. Avoid AI slop emojis."
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You are building a JS (React) application. Do NOT use .tsx files. Use .jsx/.js extensions.",
+    "ALL interactive and key informational elements MUST include a 'data-testid' attribute (e.g., data-testid='login-button', data-testid='therapist-card').",
+    "Avoid the 'AI slop' aesthetic. Create depth with layering, use generous spacing, and make it look premium.",
+    "DO NOT apply 'transition: all' globally in CSS. Apply specific transitions to interactive elements.",
+    "DO NOT center align the entire app container (no .App { text-align: center; }).",
+    "Use Shadcn components for forms, dialogs, dropdowns, and tables. Do not build these complex accessible components from raw HTML.",
+    "For toasts, use 'sonner'.",
+    "Always explicitly set text color on hover states (e.g., hover:bg-primary hover:text-white).",
+    "DO NOT use fully transparent backgrounds on elements overlaying content."
+  ]
+}

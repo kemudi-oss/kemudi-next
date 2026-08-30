@@ -1,0 +1,40 @@
+{
+  "summary": "Full backend + frontend E2E of Kemudi. All 19 pytest tests pass (health, therapists directory & filters, single-therapist, compare, quiz match, register/login/me, public referral, portal profile, client CRUD + free-tier cap incl. archive-toggle re-cap, referrals status transitions, portal summary, Stripe checkout create + status + auth guard). Playwright verified: Home CTAs, Find directory with specialty filter (6->1 for Anxiety), compare selection & /compare route, therapist detail page (referral form present), 4-step quiz -> 5 matches, therapist registration -> /portal redirect, all 5 portal tabs render, adding 5 active clients switches CTA to 'upgrade-from-cap' (free-tier gate enforced in UI), Billing tab checkout button calls /api/payments/checkout and receives 200 (redirect to Stripe verified but body not asserted in UI to avoid external navigation). One integration bug found: creating a client without email returns 422.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/portal/clients", "issue": "Pydantic Optional[EmailStr] rejects empty string \"\" with 422. Frontend Portal.jsx sends email:'' when field left blank, causing 'Failed to add' toast for typical usage. Fix: coerce empty string to None in ClientCreate validator, OR have frontend omit empty optional fields before POST."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Portal > Clients > Add client form", "issue": "Leaving optional email blank triggers backend 422 and shows 'Failed to add' toast. Users cannot add a phone-only client through UI.", "selector": "[data-testid=\"add-client-form\"] input[type=email]", "priority": "HIGH"}
+    ],
+    "integration_issues": [
+      {"flow": "Add client (portal)", "issue": "Frontend does not strip empty optional strings before POST; backend Pydantic EmailStr rejects them.", "affected_selectors": ["[data-testid=\"submit-client\"]"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_kemudi.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Fix empty-email 422: in /app/backend/server.py either use a field_validator on ClientCreate.email to convert '' to None, or in /app/frontend/src/pages/Portal.jsx build the POST payload excluding blank optional strings.",
+    "Consider same treatment for ReferralCreate.preferred_language / preferred_mode and TherapistProfileUpdate for consistency (not currently blocking but same pitfall)."
+  ],
+  "critical_code_review_comments": [
+    "server.py: `/api/therapists/compare` accepts raw dict body - should be a Pydantic model for validation and OpenAPI docs.",
+    "server.py: `stripe.error.InvalidRequestError` fallback swallows the error silently on checkout - fine but log the reason.",
+    "server.py: `on_startup` seed function calls Stripe network from process startup - if Stripe is down at boot the app still starts, but consider making Stripe catalog setup lazy so cold-starts are fast.",
+    "server.py: `CORS_ORIGINS` env var is set in .env but not consumed - `allow_origins=['*']` is hardcoded. Should read from env for prod hardening.",
+    "server.py: JWT algorithm HS256 with 7-day expiry stored in localStorage - acceptable for MVP but consider httpOnly cookies later.",
+    "Portal.jsx (321 lines) is fine but the Profile component silently ignores API errors on save - wrap in try/catch and toast on failure.",
+    "Find.jsx uses onBlur to trigger search for text/price inputs - reasonable, but users may expect Enter key too."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (19/19)", "frontend": "95% (1 integration bug: add-client empty email)"},
+  "test_credentials": "Seeded: aisha@kemudi.my/therapist123 (therapist), client@kemudi.my/client123 (client). Verified working.",
+  "seed_data_creation": "Test suite creates TEST_ prefixed users/clients/referrals and cleans up clients after cap test. Some TEST_ users/referrals remain in DB by design (idempotent register test).",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend fully green. Only outstanding issue is empty-email 422 on POST /api/portal/clients (also potentially on other Optional[EmailStr] fields). After fix, retest: add a client via UI with name only (no email) and verify success toast. Stripe checkout UI test intentionally does not assert response body; use backend test test_checkout_creates_session_and_transaction for that.",
+  "rca of the issue": "Bug: 422 on POST /api/portal/clients when email is blank. Reproduction: login as therapist, open Clients tab, click Add client, fill name only, Save -> toast 'Failed to add'. RCA: `ClientCreate.email: Optional[EmailStr] = None` in server.py. Pydantic EmailStr does not accept ''. React form initializes state {email: ''} and posts the form as-is via `api.post('/portal/clients', form)`, so the payload always contains email:''. Mitigation options: (a) backend - add @field_validator('email', mode='before') that returns None for empty strings; (b) frontend - build payload = {...form}; ['email','phone','notes'].forEach(k=>{if(!payload[k]) delete payload[k]}) before POST. Recommended: apply (a) since same issue could affect ReferralCreate/TherapistProfileUpdate later."
+}
