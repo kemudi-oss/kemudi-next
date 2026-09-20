@@ -1,5 +1,8 @@
 import { Resend } from 'resend'
 import { BookingConfirmation } from '@/emails/BookingConfirmation'
+import { ProviderApproval } from '@/emails/ProviderApproval'
+import { ReviewNotification } from '@/emails/ReviewNotification'
+import { generateICS } from '@/utilities/ics'
 import React from 'react'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -26,6 +29,14 @@ export async function sendBookingConfirmation({
   providerProfileUrl,
 }: SendBookingConfirmationProps) {
   try {
+    const icsContent = generateICS({
+      providerName,
+      clientName,
+      serviceName,
+      date,
+      time,
+    })
+
     const { data, error } = await resend.emails.send({
       from: 'Kemudi <noreply@kemudi.com>',
       to,
@@ -39,6 +50,12 @@ export async function sendBookingConfirmation({
         sessionFee,
         providerProfileUrl,
       }) as React.ReactNode,
+      attachments: [
+        {
+          filename: 'booking.ics',
+          content: Buffer.from(icsContent).toString('base64'),
+        },
+      ],
     })
 
     if (error) {

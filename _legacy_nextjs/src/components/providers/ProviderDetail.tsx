@@ -96,7 +96,7 @@ export const ProviderDetail: React.FC<ProviderDetailProps> = ({ provider, review
 
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
-                  href={`/booking?provider=${provider.id}`}
+                  href={`/providers/${provider.slug}/book`}
                   className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   <CalendarIcon className="h-4 w-4" />
@@ -199,7 +199,7 @@ export const ProviderDetail: React.FC<ProviderDetailProps> = ({ provider, review
                     <span className="text-sm font-normal text-muted-foreground">/session</span>
                   </p>
                   <Link
-                    href={`/booking?provider=${provider.id}`}
+                    href={`/providers/${provider.slug}/book`}
                     className="mt-4 block rounded-lg bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                   >
                     Book now
