@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { sendReviewNotificationEmail } from '@/utilities/email'
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
@@ -72,5 +73,33 @@ export const Reviews: CollectionConfig = {
       required: true,
     },
   ],
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        if (operation !== 'create') return
+
+        try {
+          const provider = await req.payload.findByID({
+            collection: 'provider-profiles',
+            id: typeof doc.provider === 'object' ? doc.provider.id : doc.provider,
+            depth: 1,
+          })
+
+          const user = typeof provider.user === 'object' ? provider.user : null
+          if (!user?.email) return
+
+          await sendReviewNotificationEmail({
+            to: user.email,
+            providerName: user.name || 'Provider',
+            reviewerName: doc.authorName || 'Anonymous',
+            rating: doc.rating,
+            reviewTitle: doc.title,
+          })
+        } catch (err) {
+          console.error('Failed to send review notification email:', err)
+        }
+      },
+    ],
+  },
   timestamps: true,
 }
