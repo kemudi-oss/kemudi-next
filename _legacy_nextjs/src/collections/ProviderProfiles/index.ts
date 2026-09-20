@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { sendProviderApprovalEmail } from '@/utilities/email'
 
 export const ProviderProfiles: CollectionConfig = {
   slug: 'provider-profiles',
@@ -6,9 +7,9 @@ export const ProviderProfiles: CollectionConfig = {
     defaultColumns: ['title', 'user', 'approvalStatus', 'accountStatus'],
     useAsTitle: 'title',
   },
-  // versions: {
-  //   drafts: true,
-  // },
+  versions: {
+    drafts: true,
+  },
   access: {
     admin: ({ req }) => req.user?.role === 'admin',
     create: ({ req }) => req.user?.role === 'admin',
@@ -200,6 +201,31 @@ export const ProviderProfiles: CollectionConfig = {
               .replace(/[^a-z0-9]+/g, '-')
               .replace(/^-|-$/g, '')
           }
+        }
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, req }) => {
+        const prevStatus = previousDoc?.approvalStatus
+        const newStatus = doc?.approvalStatus
+        if (!newStatus || prevStatus === newStatus) return
+        if (newStatus !== 'approved' && newStatus !== 'rejected') return
+
+        try {
+          const user = await req.payload.findByID({
+            collection: 'users',
+            id: typeof doc.user === 'object' ? doc.user.id : doc.user,
+          })
+          if (user?.email) {
+            await sendProviderApprovalEmail({
+              to: user.email,
+              providerName: user.name || 'Provider',
+              approved: newStatus === 'approved',
+              notes: doc.approvalNotes,
+            })
+          }
+        } catch (err) {
+          console.error('Failed to send provider approval email:', err)
         }
       },
     ],

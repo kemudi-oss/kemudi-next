@@ -69,3 +69,82 @@ export async function sendBookingConfirmation({
     return { success: false, error }
   }
 }
+
+interface SendProviderApprovalProps {
+  to: string
+  providerName: string
+  approved: boolean
+  notes?: string
+}
+
+export async function sendProviderApprovalEmail({
+  to,
+  providerName,
+  approved,
+  notes,
+}: SendProviderApprovalProps) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Kemudi <noreply@kemudi.com>',
+      to,
+      subject: approved
+        ? 'Your Kemudi profile has been approved'
+        : 'Kemudi profile review update',
+      react: ProviderApproval({
+        providerName,
+        approved,
+        notes,
+      }) as React.ReactNode,
+    })
+
+    if (error) {
+      console.error('Provider approval email error:', error)
+      return { success: false, error }
+    }
+
+    return { success: true, data }
+  } catch (error) {
+    console.error('Provider approval email error:', error)
+    return { success: false, error }
+  }
+}
+
+interface SendReviewNotificationProps {
+  to: string
+  providerName: string
+  reviewerName: string
+  rating: number
+  reviewTitle?: string
+}
+
+export async function sendReviewNotificationEmail({
+  to,
+  providerName,
+  reviewerName,
+  rating,
+  reviewTitle,
+}: SendReviewNotificationProps) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Kemudi <noreply@kemudi.com>',
+      to,
+      subject: `New review from ${reviewerName} on Kemudi`,
+      react: ReviewNotification({
+        providerName,
+        reviewerName,
+        rating,
+        reviewTitle,
+      }) as React.ReactNode,
+    })
+
+    if (error) {
+      console.error('Review notification email error:', error)
+      return { success: false, error }
+    }
+
+    return { success: true, data }
+  } catch (error) {
+    console.error('Review notification email error:', error)
+    return { success: false, error }
+  }
+}
