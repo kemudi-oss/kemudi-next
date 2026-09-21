@@ -9,7 +9,7 @@ Trust via reviews, moderation, transparent pricing.
 ## §C Constraints
 
 - Next.js App Router + Payload CMS v3 on Vercel
-- PostgreSQL via Neon, Vercel Blob for files
+- PostgreSQL via AWS Aurora (Vercel AWS Marketplace integration), Vercel Blob for files
 - shadcn/ui + Tailwind v4 + Radix UI
 - EN primary, MS secondary (CN/TN future)
 - Mobile-first responsive
@@ -100,7 +100,7 @@ V24: PDPA compliance:
   - Retention → user data ! account active. Deleted → purged 30d. Bookings → 7yr. Consent logs → 3yr.
   - Breach → ≤ 72h notify PDPA Commissioner + affected users. Playbook maintained.
   - Health data → intake form responses = sensitive. Explicit consent ! processing. Encrypted at rest. Provider specialties = public ≠ sensitive.
-  - Cross-border → Vercel (US) + Neon (US). DPAs ! place. Users notified in privacy policy.
+  - Cross-border → Vercel (US) + AWS Aurora (ap-southeast-1, Singapore). DPAs ! place. Users notified in privacy policy.
 
 V25: cancellation + refund:
   - User → cancel through system. ! auto-refund. Case-by-case: coupons (prioritised) | card refund (Stripe).

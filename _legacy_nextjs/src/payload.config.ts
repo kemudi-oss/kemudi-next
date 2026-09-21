@@ -1,4 +1,3 @@
-import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import sharp from 'sharp'
 import path from 'path'
@@ -28,6 +27,7 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { getRdsAuthToken } from './utilities/rdsAuth'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 const filename = fileURLToPath(import.meta.url)
@@ -72,22 +72,28 @@ export default buildConfig({
   },
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
-  db: process.env.NODE_ENV === 'production'
-    ? vercelPostgresAdapter({
-      prodMigrations: migrations,
-      pool: {
-        connectionString: process.env.POSTGRES_URL || '',
-      },
-      push: false,
-    })
-    : postgresAdapter({
-      prodMigrations: migrations,
-      pool: {
-        connectionString: process.env.POSTGRES_URL || '',
-      },
-      push: false,
-    })
-  ,
+  // AWS Aurora Postgres (via Vercel's AWS Marketplace integration) speaks the
+  // standard wire protocol, so plain postgresAdapter works for both dev and
+  // prod — no Neon/Vercel-specific adapter needed. Aurora has no static
+  // password (PGHOST set, no POSTGRES_URL) — auth is IAM via a per-connection
+  // token (see ./utilities/rdsAuth). Falls back to POSTGRES_URL for plain
+  // local Postgres (e.g. docker-compose) when PGHOST isn't set.
+  db: postgresAdapter({
+    prodMigrations: migrations,
+    pool: process.env.PGHOST
+      ? {
+          host: process.env.PGHOST,
+          port: Number(process.env.PGPORT) || 5432,
+          database: process.env.PGDATABASE,
+          user: process.env.PGUSER,
+          password: getRdsAuthToken,
+          ssl: process.env.PGSSLMODE === 'disable' ? false : { rejectUnauthorized: false },
+        }
+      : {
+          connectionString: process.env.POSTGRES_URL || '',
+        },
+    push: false,
+  }),
   collections: [Pages, Posts, Media, Categories, Users, ProviderProfiles, Specialties, Approaches, Centres, Licences, Interests, ConsentLogs, Reviews, Languages, Bookings, MatchResponses],
   cors: [getServerSideURL()].filter(Boolean),
   localization: {

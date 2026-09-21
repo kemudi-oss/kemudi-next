@@ -137,7 +137,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   DROP INDEX "provider_profiles_slug_idx";
 
   -- rename bookings.status -> bookings.booking_status (data-preserving; frees up "status"
-  -- for Payload's own draft/published "_status" versioning field added below)
+  -- for the payload draft/published "_status" versioning field added below)
   ALTER TYPE "public"."enum_bookings_status" RENAME TO "enum_bookings_booking_status";
   ALTER TABLE "bookings" RENAME COLUMN "status" TO "booking_status";
   CREATE TYPE "public"."enum_bookings_status" AS ENUM('draft', 'published');
