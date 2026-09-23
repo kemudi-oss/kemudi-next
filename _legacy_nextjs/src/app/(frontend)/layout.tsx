@@ -29,45 +29,57 @@ import { getServerSideURL } from '@/utilities/getURL'
 import { GrainOverlay } from '@/components/ui/grain-overlay'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { isEnabled } = await draftMode()
+  try {
+    const { isEnabled } = await draftMode()
 
-  return (
-    <html className={cn('font-body')} lang="en" suppressHydrationWarning>
-      <head>
-        <InitTheme />
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
-        {process.env.NEXT_PUBLIC_POSTHOG_KEY && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-                posthog.init('${process.env.NEXT_PUBLIC_POSTHOG_KEY}', {api_host: '${process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com'}'});
-              `,
-            }}
-          />
-        )}
-      </head>
-      <body>
-        <GrainOverlay />
-        <Providers>
-          <LocaleProvider>
-            <AdminBar
-              adminBarProps={{
-                preview: isEnabled,
+    return (
+      <html className={cn('font-body')} lang="en" suppressHydrationWarning>
+        <head>
+          <InitTheme />
+          <link href="/favicon.ico" rel="icon" sizes="32x32" />
+          <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+          {process.env.NEXT_PUBLIC_POSTHOG_KEY && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+                  posthog.init('${process.env.NEXT_PUBLIC_POSTHOG_KEY}', {api_host: '${process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com'}'});
+                `,
               }}
             />
+          )}
+        </head>
+        <body>
+          <GrainOverlay />
+          <Providers>
+            <LocaleProvider>
+              <AdminBar
+                adminBarProps={{
+                  preview: isEnabled,
+                }}
+              />
 
-            <Header />
-            {children}
-            <Footer />
-          </LocaleProvider>
-        </Providers>
-        <Analytics />
-        <SpeedInsights />
-      </body>
-    </html>
-  )
+              <Header />
+              {children}
+              <Footer />
+            </LocaleProvider>
+          </Providers>
+          <Analytics />
+          <SpeedInsights />
+        </body>
+      </html>
+    )
+  } catch (err: any) {
+    return (
+      <html>
+        <body style={{ background: 'red', color: 'white', padding: '20px' }}>
+          <h1>Layout Error</h1>
+          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{String(err?.message)}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{String(err?.stack)}</pre>
+        </body>
+      </html>
+    )
+  }
 }
 
 export const metadata: Metadata = {
