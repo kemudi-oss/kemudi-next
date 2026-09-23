@@ -17,10 +17,6 @@ const nextConfig: NextConfig = {
   sassOptions: {
     loadPaths: ['./node_modules/@payloadcms/ui/dist/scss/'],
   },
-  serverExternalPackages: [
-    '@aws-sdk/rds-signer',
-    '@aws-sdk/credential-provider-web-identity',
-  ],
   images: {
     localPatterns: [
       {
