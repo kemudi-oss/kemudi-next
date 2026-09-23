@@ -26,6 +26,12 @@ function getSigner(): Signer {
   return signer
 }
 
-export function getRdsAuthToken(): Promise<string> {
-  return getSigner().getAuthToken()
+export async function getRdsAuthToken(): Promise<string> {
+  try {
+    return await getSigner().getAuthToken()
+  } catch (err) {
+    signer = undefined
+    console.error('Failed to get RDS auth token:', err)
+    throw err
+  }
 }
