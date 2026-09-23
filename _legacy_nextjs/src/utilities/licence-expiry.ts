@@ -5,7 +5,13 @@ import config from '@payload-config'
 import { Resend } from 'resend'
 import { LicenceExpiryEmail } from '@/emails/LicenceExpiry'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | null = null
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return _resend
+}
 
 export async function checkExpiringLicences() {
   const payload = await getPayload({ config })
@@ -38,7 +44,7 @@ export async function checkExpiringLicences() {
       if (!user?.email) continue
 
       // Send email
-      await resend.emails.send({
+      await getResend().emails.send({
         from: 'Kemudi <noreply@kemudi.com>',
         to: user.email,
         subject: `Licence expiry reminder: ${licence.type} expires in ${daysUntilExpiry} days`,

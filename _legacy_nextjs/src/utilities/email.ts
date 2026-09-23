@@ -5,7 +5,13 @@ import { ReviewNotification } from '@/emails/ReviewNotification'
 import { generateICS } from '@/utilities/ics'
 import React from 'react'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | null = null
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return _resend
+}
 
 interface SendBookingConfirmationProps {
   to: string
@@ -37,7 +43,7 @@ export async function sendBookingConfirmation({
       time,
     })
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: 'Kemudi <noreply@kemudi.com>',
       to,
       subject: `Booking confirmed with ${providerName}`,
@@ -84,7 +90,7 @@ export async function sendProviderApprovalEmail({
   notes,
 }: SendProviderApprovalProps) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: 'Kemudi <noreply@kemudi.com>',
       to,
       subject: approved
@@ -125,7 +131,7 @@ export async function sendReviewNotificationEmail({
   reviewTitle,
 }: SendReviewNotificationProps) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: 'Kemudi <noreply@kemudi.com>',
       to,
       subject: `New review from ${reviewerName} on Kemudi`,
