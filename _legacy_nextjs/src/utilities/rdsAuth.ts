@@ -28,7 +28,10 @@ function getSigner(): Signer {
 
 export async function getRdsAuthToken(): Promise<string> {
   try {
-    return await getSigner().getAuthToken()
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('RDS auth token timeout')), 8_000),
+    )
+    return await Promise.race([getSigner().getAuthToken(), timeout])
   } catch (err) {
     signer = undefined
     console.error('Failed to get RDS auth token:', err)
