@@ -6,12 +6,10 @@ import { awsCredentialsProvider } from '@vercel/functions/oidc'
  * password — auth is IAM: assume AWS_ROLE_ARN (via Vercel's OIDC
  * federation, works both on Vercel and locally through `vercel env pull`'s
  * VERCEL_OIDC_TOKEN) then generate a short-lived RDS auth token per
- * connection. Tokens expire in ~15min, so we cache for 10min to avoid
- * the expensive STS + RDS signer round-trip on every pool connection.
+ * connection. Tokens expire in ~15min, so this must be called fresh for
+ * every new pg connection, not cached at pool-creation time.
  */
 let signer: Signer | undefined
-let cachedToken: string | undefined
-let cachedTokenExpiry = 0
 
 function getSigner(): Signer {
   if (!signer) {
@@ -28,23 +26,6 @@ function getSigner(): Signer {
   return signer
 }
 
-export async function getRdsAuthToken(): Promise<string> {
-  if (cachedToken && Date.now() < cachedTokenExpiry) {
-    return cachedToken
-  }
-  try {
-    const timeout = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('RDS auth token timeout')), 8_000),
-    )
-    const token = await Promise.race([getSigner().getAuthToken(), timeout])
-    cachedToken = token
-    cachedTokenExpiry = Date.now() + 10 * 60 * 1000
-    return token
-  } catch (err) {
-    signer = undefined
-    cachedToken = undefined
-    cachedTokenExpiry = 0
-    console.error('Failed to get RDS auth token:', err)
-    throw err
-  }
+export function getRdsAuthToken(): Promise<string> {
+  return getSigner().getAuthToken()
 }

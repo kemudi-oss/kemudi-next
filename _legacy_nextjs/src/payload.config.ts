@@ -88,11 +88,6 @@ export default buildConfig({
           user: process.env.PGUSER,
           password: getRdsAuthToken,
           ssl: process.env.PGSSLMODE === 'disable' ? false : { rejectUnauthorized: false },
-          max: 2,
-          connectionTimeoutMillis: 10_000,
-          idleTimeoutMillis: 5_000,
-          keepAlive: true,
-          allowExitOnIdle: true,
         }
       : {
           connectionString: process.env.POSTGRES_URL || '',
