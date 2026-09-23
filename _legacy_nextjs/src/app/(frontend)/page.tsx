@@ -17,19 +17,20 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const payload = await getPayload({ config })
+  try {
+    const payload = await getPayload({ config })
 
-  const result = await payload.find({
-    collection: 'provider-profiles',
-    where: {
-      approvalStatus: { equals: 'approved' },
-    },
-    limit: 6,
-    depth: 2,
-    sort: '-createdAt',
-  })
+    const result = await payload.find({
+      collection: 'provider-profiles',
+      where: {
+        approvalStatus: { equals: 'approved' },
+      },
+      limit: 6,
+      depth: 2,
+      sort: '-createdAt',
+    })
 
-  return (
+    return (
     <main>
       <SearchHero
         searchPlaceholder="What brings you here today?"
@@ -148,5 +149,14 @@ export default async function HomePage() {
         </div>
       </section>
     </main>
-  )
+    )
+  } catch (err: any) {
+    return (
+      <main className="container py-24">
+        <h1>Something went wrong</h1>
+        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{err?.message}</pre>
+        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{err?.stack}</pre>
+      </main>
+    )
+  }
 }
